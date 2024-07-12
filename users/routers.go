@@ -27,7 +27,7 @@ func ProfileRetrieve(c *gin.Context) {
 	username := c.Param("username")
 	userModel, err := FindOneUser(&UserModel{Username: username})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("invalid username")))
 		return
 	}
 	profileSerializer := ProfileSerializer{c, userModel}
@@ -38,7 +38,7 @@ func ProfileFollow(c *gin.Context) {
 	username := c.Param("username")
 	userModel, err := FindOneUser(&UserModel{Username: username})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("invalid username")))
 		return
 	}
 	myUserModel := c.MustGet("my_user_model").(UserModel)
@@ -55,7 +55,7 @@ func ProfileUnfollow(c *gin.Context) {
 	username := c.Param("username")
 	userModel, err := FindOneUser(&UserModel{Username: username})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("Invalid username")))
+		c.JSON(http.StatusNotFound, common.NewError("profile", errors.New("invalid username")))
 		return
 	}
 	myUserModel := c.MustGet("my_user_model").(UserModel)
@@ -94,12 +94,12 @@ func UsersLogin(c *gin.Context) {
 	userModel, err := FindOneUser(&UserModel{Email: loginValidator.userModel.Email})
 
 	if err != nil {
-		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not Registered email or invalid password")))
+		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("not registered email or invalid password")))
 		return
 	}
 
 	if userModel.checkPassword(loginValidator.User.Password) != nil {
-		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("Not Registered email or invalid password")))
+		c.JSON(http.StatusForbidden, common.NewError("login", errors.New("not registered email or invalid password")))
 		return
 	}
 	UpdateContextUserModel(c, userModel.ID)

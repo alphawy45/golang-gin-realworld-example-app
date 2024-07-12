@@ -1,8 +1,8 @@
 package users
 
 import (
-	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gin-gonic/gin"
+	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 )
 
 // *ModelValidator containing two parts:
@@ -23,20 +23,20 @@ type UserModelValidator struct {
 // There are some difference when you create or update a model, you need to fill the DataModel before
 // update so that you can use your origin data to cheat the validator.
 // BTW, you can put your general binding logic here such as setting password.
-func (self *UserModelValidator) Bind(c *gin.Context) error {
-	err := common.Bind(c, self)
+func (umv *UserModelValidator) Bind(c *gin.Context) error {
+	err := common.Bind(c, umv)
 	if err != nil {
 		return err
 	}
-	self.userModel.Username = self.User.Username
-	self.userModel.Email = self.User.Email
-	self.userModel.Bio = self.User.Bio
+	umv.userModel.Username = umv.User.Username
+	umv.userModel.Email = umv.User.Email
+	umv.userModel.Bio = umv.User.Bio
 
-	if self.User.Password != common.NBRandomPassword {
-		self.userModel.setPassword(self.User.Password)
+	if umv.User.Password != common.NBRandomPassword {
+		umv.userModel.setPassword(umv.User.Password)
 	}
-	if self.User.Image != "" {
-		self.userModel.Image = &self.User.Image
+	if umv.User.Image != "" {
+		umv.userModel.Image = &umv.User.Image
 	}
 	return nil
 }
@@ -64,18 +64,18 @@ func NewUserModelValidatorFillWith(userModel UserModel) UserModelValidator {
 type LoginValidator struct {
 	User struct {
 		Email    string `form:"email" json:"email" binding:"exists,email"`
-		Password string `form:"password"json:"password" binding:"exists,min=8,max=255"`
+		Password string `form:"password" json:"password" binding:"exists,min=8,max=255"`
 	} `json:"user"`
 	userModel UserModel `json:"-"`
 }
 
-func (self *LoginValidator) Bind(c *gin.Context) error {
-	err := common.Bind(c, self)
+func (lv *LoginValidator) Bind(c *gin.Context) error {
+	err := common.Bind(c, lv)
 	if err != nil {
 		return err
 	}
 
-	self.userModel.Email = self.User.Email
+	lv.userModel.Email = lv.User.Email
 	return nil
 }
 

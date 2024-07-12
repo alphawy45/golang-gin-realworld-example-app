@@ -31,6 +31,11 @@ This codebase was created to demonstrate a fully fledged fullstack application b
 ```
 
 # Getting started
+## install sqlite3
+NOTE: sqlite3 is preinstalled with MacOS
+
+download from [sqlite web site](https://www.sqlite.org/download.html)
+
 
 ## Install Golang
 
