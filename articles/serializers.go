@@ -1,9 +1,9 @@
 package articles
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gosimple/slug"
 	"github.com/gothinkster/golang-gin-realworld-example-app/users"
-	"github.com/gin-gonic/gin"
 )
 
 type TagSerializer struct {
@@ -35,7 +35,10 @@ type ArticleUserSerializer struct {
 }
 
 func (s *ArticleUserSerializer) Response() users.ProfileResponse {
-	response := users.ProfileSerializer{s.C, s.ArticleUserModel.UserModel}
+	response := users.ProfileSerializer{
+		C:         s.C,
+		UserModel: s.ArticleUserModel.UserModel,
+	}
 	return response.Response()
 }
 

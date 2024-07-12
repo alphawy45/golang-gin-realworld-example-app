@@ -54,7 +54,7 @@ func ArticleList(c *gin.Context) {
 	offset := c.Query("offset")
 	articleModels, modelCount, err := FindManyArticle(tag, author, limit, offset, favorited)
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid param")))
 		return
 	}
 	serializer := ArticlesSerializer{c, articleModels}
@@ -66,13 +66,13 @@ func ArticleFeed(c *gin.Context) {
 	offset := c.Query("offset")
 	myUserModel := c.MustGet("my_user_model").(users.UserModel)
 	if myUserModel.ID == 0 {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("{error : \"Require auth!\"}"))
+		c.AbortWithError(http.StatusUnauthorized, errors.New("{error : \"require auth\"}"))
 		return
 	}
 	articleUserModel := GetArticleUserModel(myUserModel)
 	articleModels, modelCount, err := articleUserModel.GetArticleFeed(limit, offset)
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid param")))
 		return
 	}
 	serializer := ArticlesSerializer{c, articleModels}
@@ -87,7 +87,7 @@ func ArticleRetrieve(c *gin.Context) {
 	}
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid slug")))
 		return
 	}
 	serializer := ArticleSerializer{c, articleModel}
@@ -98,7 +98,7 @@ func ArticleUpdate(c *gin.Context) {
 	slug := c.Param("slug")
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid slug")))
 		return
 	}
 	articleModelValidator := NewArticleModelValidatorFillWith(articleModel)
@@ -120,7 +120,7 @@ func ArticleDelete(c *gin.Context) {
 	slug := c.Param("slug")
 	err := DeleteArticleModel(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid slug")))
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"article": "Delete success"})
@@ -130,11 +130,11 @@ func ArticleFavorite(c *gin.Context) {
 	slug := c.Param("slug")
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid slug")))
 		return
 	}
 	myUserModel := c.MustGet("my_user_model").(users.UserModel)
-	err = articleModel.favoriteBy(GetArticleUserModel(myUserModel))
+	_ = articleModel.favoriteBy(GetArticleUserModel(myUserModel))
 	serializer := ArticleSerializer{c, articleModel}
 	c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})
 }
@@ -143,11 +143,11 @@ func ArticleUnfavorite(c *gin.Context) {
 	slug := c.Param("slug")
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid slug")))
 		return
 	}
 	myUserModel := c.MustGet("my_user_model").(users.UserModel)
-	err = articleModel.unFavoriteBy(GetArticleUserModel(myUserModel))
+	_ = articleModel.unFavoriteBy(GetArticleUserModel(myUserModel))
 	serializer := ArticleSerializer{c, articleModel}
 	c.JSON(http.StatusOK, gin.H{"article": serializer.Response()})
 }
@@ -156,7 +156,7 @@ func ArticleCommentCreate(c *gin.Context) {
 	slug := c.Param("slug")
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("invalid slug")))
 		return
 	}
 	commentModelValidator := NewCommentModelValidator()
@@ -178,12 +178,12 @@ func ArticleCommentDelete(c *gin.Context) {
 	id64, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	id := uint(id64)
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid id")))
+		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("invalid id")))
 		return
 	}
 	err = DeleteCommentModel([]uint{id})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("Invalid id")))
+		c.JSON(http.StatusNotFound, common.NewError("comment", errors.New("invalid id")))
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"comment": "Delete success"})
@@ -193,12 +193,12 @@ func ArticleCommentList(c *gin.Context) {
 	slug := c.Param("slug")
 	articleModel, err := FindOneArticle(&ArticleModel{Slug: slug})
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("Invalid slug")))
+		c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("invalid slug")))
 		return
 	}
 	err = articleModel.getComments()
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("Database error")))
+		c.JSON(http.StatusNotFound, common.NewError("comments", errors.New("database error")))
 		return
 	}
 	serializer := CommentsSerializer{c, articleModel.Comments}
@@ -207,7 +207,7 @@ func ArticleCommentList(c *gin.Context) {
 func TagList(c *gin.Context) {
 	tagModels, err := getAllTags()
 	if err != nil {
-		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("Invalid param")))
+		c.JSON(http.StatusNotFound, common.NewError("articles", errors.New("invalid param")))
 		return
 	}
 	serializer := TagsSerializer{c, tagModels}

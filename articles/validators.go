@@ -1,15 +1,15 @@
 package articles
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gosimple/slug"
 	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gothinkster/golang-gin-realworld-example-app/users"
-	"github.com/gin-gonic/gin"
 )
 
 type ArticleModelValidator struct {
 	Article struct {
-		Title       string   `form:"title" json:"title" binding:"exists,min=4"`
+		Title       string   `form:"title" json:"title" binding:"required,min=4"`
 		Description string   `form:"description" json:"description" binding:"max=2048"`
 		Body        string   `form:"body" json:"body" binding:"max=2048"`
 		Tags        []string `form:"tagList" json:"tagList"`

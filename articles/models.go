@@ -2,10 +2,11 @@ package articles
 
 import (
 	_ "fmt"
-	"github.com/jinzhu/gorm"
+	"strconv"
+
 	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 	"github.com/gothinkster/golang-gin-realworld-example-app/users"
-	"strconv"
+	"github.com/jinzhu/gorm"
 )
 
 type ArticleModel struct {
@@ -120,13 +121,13 @@ func FindOneArticle(condition interface{}) (ArticleModel, error) {
 	return model, err
 }
 
-func (self *ArticleModel) getComments() error {
+func (am *ArticleModel) getComments() error {
 	db := common.GetDB()
 	tx := db.Begin()
-	tx.Model(self).Related(&self.Comments, "Comments")
-	for i, _ := range self.Comments {
-		tx.Model(&self.Comments[i]).Related(&self.Comments[i].Author, "Author")
-		tx.Model(&self.Comments[i].Author).Related(&self.Comments[i].Author.UserModel)
+	tx.Model(am).Related(&am.Comments, "Comments")
+	for i := range am.Comments {
+		tx.Model(&am.Comments[i]).Related(&am.Comments[i].Author, "Author")
+		tx.Model(&am.Comments[i].Author).Related(&am.Comments[i].Author.UserModel)
 	}
 	err := tx.Commit().Error
 	return err
@@ -193,7 +194,7 @@ func FindManyArticle(tag, author, limit, offset, favorited string) ([]ArticleMod
 		db.Offset(offset_int).Limit(limit_int).Find(&models)
 	}
 
-	for i, _ := range models {
+	for i := range models {
 		tx.Model(&models[i]).Related(&models[i].Author, "Author")
 		tx.Model(&models[i].Author).Related(&models[i].Author.UserModel)
 		tx.Model(&models[i]).Related(&models[i].Tags, "Tags")
@@ -202,7 +203,7 @@ func FindManyArticle(tag, author, limit, offset, favorited string) ([]ArticleMod
 	return models, count, err
 }
 
-func (self *ArticleUserModel) GetArticleFeed(limit, offset string) ([]ArticleModel, int, error) {
+func (aum *ArticleUserModel) GetArticleFeed(limit, offset string) ([]ArticleModel, int, error) {
 	db := common.GetDB()
 	var models []ArticleModel
 	var count int
@@ -217,7 +218,7 @@ func (self *ArticleUserModel) GetArticleFeed(limit, offset string) ([]ArticleMod
 	}
 
 	tx := db.Begin()
-	followings := self.UserModel.GetFollowings()
+	followings := aum.UserModel.GetFollowings()
 	var articleUserModels []uint
 	for _, following := range followings {
 		articleUserModel := GetArticleUserModel(following)
@@ -226,7 +227,7 @@ func (self *ArticleUserModel) GetArticleFeed(limit, offset string) ([]ArticleMod
 
 	tx.Where("author_id in (?)", articleUserModels).Order("updated_at desc").Offset(offset_int).Limit(limit_int).Find(&models)
 
-	for i, _ := range models {
+	for i := range models {
 		tx.Model(&models[i]).Related(&models[i].Author, "Author")
 		tx.Model(&models[i].Author).Related(&models[i].Author.UserModel)
 		tx.Model(&models[i]).Related(&models[i].Tags, "Tags")
