@@ -2,25 +2,26 @@ package users
 
 import (
 	"errors"
-	"github.com/gothinkster/golang-gin-realworld-example-app/common"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gothinkster/golang-gin-realworld-example-app/common"
 )
 
 func UsersRegister(router *gin.RouterGroup) {
-	router.POST("/", UsersRegistration)
-	router.POST("/login", UsersLogin)
+	router.POST("", UsersRegistration)
+	router.POST("login", UsersLogin)
 }
 
 func UserRegister(router *gin.RouterGroup) {
-	router.GET("/", UserRetrieve)
-	router.PUT("/", UserUpdate)
+	router.GET("", UserRetrieve)
+	router.PUT("", UserUpdate)
 }
 
 func ProfileRegister(router *gin.RouterGroup) {
-	router.GET("/:username", ProfileRetrieve)
-	router.POST("/:username/follow", ProfileFollow)
-	router.DELETE("/:username/follow", ProfileUnfollow)
+	router.GET(":username", ProfileRetrieve)
+	router.POST(":username/follow", ProfileFollow)
+	router.DELETE(":username/follow", ProfileUnfollow)
 }
 
 func ProfileRetrieve(c *gin.Context) {

@@ -1,5 +1,6 @@
 package common
 
+
 import (
 	"bytes"
 	"errors"
@@ -12,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//cspell:ignore stretchr gorm JWT alphanum wangzitian
 func TestConnectingDatabase(t *testing.T) {
 	asserts := assert.New(t)
 	db := Init()
@@ -91,7 +93,7 @@ func TestNewValidatorError(t *testing.T) {
 	var requestTests = []struct {
 		bodyData       string
 		expectedCode   int
-		responseRegexg string
+		responseRegexG string
 		msg            string
 	}{
 		{
@@ -145,7 +147,7 @@ func TestNewValidatorError(t *testing.T) {
 		r.ServeHTTP(w, req)
 
 		asserts.Equal(testData.expectedCode, w.Code, "Response Status - "+testData.msg)
-		asserts.Regexp(testData.responseRegexg, w.Body.String(), "Response Content - "+testData.msg)
+		asserts.Regexp(testData.responseRegexG, w.Body.String(), "Response Content - "+testData.msg)
 	}
 }
 
@@ -154,12 +156,14 @@ func TestNewError(t *testing.T) {
 
 	db := TestDBInit()
 	type NotExist struct {
-		heheda string
+		heheda string		// cspell: disable-line
 	}
 	db.AutoMigrate(NotExist{})
 
+	// cspell: disable
 	commenError := NewError("database", db.Find(NotExist{heheda: "heheda"}).Error)
 	assert.IsType(commenError, commenError, "commenError should have right type")
 	assert.Equal(map[string]interface{}(map[string]interface{}{"database": "no such table: not_exists"}),
 		commenError.Errors, "commenError should have right error info")
+	// cspell: enable
 }
